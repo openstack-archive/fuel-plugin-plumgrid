@@ -1,0 +1,30 @@
+global_defs {
+  router_id <%= @hostname %>
+}
+
+vrrp_script chk_nginx {
+  script "killall -0 nginx"
+  interval 2
+}
+
+vrrp_instance nos {
+  virtual_router_id <%= @keepalived_router_id %>
+
+  # for electing MASTER, highest priority wins.
+  priority  <%= @keepalived_priority %>
+  state     BACKUP
+  nopreempt
+
+  interface <%= @mgmt_dev %>
+
+  virtual_ipaddress {
+    <%= @virtual_ip %> dev <%= @mgmt_dev %> label <%= @mgmt_dev %>:1
+  }
+  track_script {
+    chk_nginx
+  }
+  authentication {
+    auth_type PASS
+    auth_pass <%= @keepalived_password %>
+  }
+}
