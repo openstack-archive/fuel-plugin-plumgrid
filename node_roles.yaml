@@ -1,0 +1,7 @@
+PLUMgrid-Gateway:
+  name: "PLUMgrid-Gateway"
+  description: "External Connectivity using PLUMgrid"
+  conflicts:
+    - compute
+  limits:
+    min: 1
