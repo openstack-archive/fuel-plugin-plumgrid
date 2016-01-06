@@ -1,0 +1,7 @@
+<%= @fabric_dev %> = fabric_core host
+<%- @gateway_devs.uniq.each do |entry| -%>
+<%= entry %> = access_phys
+<%- end -%>
+<%- @demux_devs.uniq.each do |entry| -%>
+<%= entry %> = trunk_ifc
+<%- end -%>
