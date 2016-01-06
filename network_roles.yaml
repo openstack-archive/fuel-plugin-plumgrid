@@ -1,0 +1,6 @@
+- id: "fabric"
+  default_mapping: "management"
+  properties:
+    subnet: true
+    gateway: false
+    vip: []
