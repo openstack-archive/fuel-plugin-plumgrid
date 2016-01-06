@@ -1,0 +1,106 @@
+- id: PLUMgrid-Gateway
+  type: group
+  role: [PLUMgrid-Gateway]
+  tasks: [hiera, globals, logging, tools, netconfig]
+  required_for: [deploy_end]
+  requires: [deploy_start]
+  parameters:
+    strategy:
+      type: parallel
+
+- id: pgtools-support
+  role: ['controller', 'primary-controller']
+  required_for: [post_deployment_end]
+  requires: [post_deployment_start]
+  type: puppet
+  parameters:
+    puppet_manifest: puppet/manifests/tools.pp
+    puppet_modules: puppet/modules:/etc/puppet/modules
+    timeout: 3000
+
+- id: check-pgzone
+  role: ['controller', 'compute', 'PLUMgrid-Gateway', 'primary-controller']
+  required_for: [post_deployment_end, pg_common]
+  requires: [post_deployment_start]
+  type: puppet
+  parameters:
+    puppet_manifest: puppet/manifests/pre_deployment.pp
+    puppet_modules: puppet/modules:/etc/puppet/modules
+    timeout: 720
+
+- id: pg_common
+  role: ['controller', 'compute', 'PLUMgrid-Gateway', 'primary-controller']
+  required_for: [post_deployment_end, pg_fabric]
+  requires: [post_deployment_start, check-pgzone]
+  type: puppet
+  parameters:
+    puppet_manifest: puppet/manifests/pg_common.pp
+    puppet_modules: puppet/modules:/etc/puppet/modules
+    timeout: 3000
+
+- id: pg_fabric
+  role: ['controller', 'compute', 'PLUMgrid-Gateway', 'primary-controller']
+  required_for: [post_deployment_end, setup-director]
+  requires: [post_deployment_start, pg_common]
+  type: shell
+  parameters:
+    cmd: bash plumgrid_fabric.sh
+    timeout: 3000
+
+- id: setup-director
+  role: ['controller', 'primary-controller']
+  required_for: [post_deployment_end, director-fixes]
+  requires: [post_deployment_start, pg_fabric]
+  type: puppet
+  parameters:
+    puppet_manifest: puppet/manifests/director.pp
+    puppet_modules: puppet/modules:/etc/puppet/modules
+    timeout: 3000
+
+- id: director-fixes
+  role: ['controller', 'primary-controller']
+  required_for: [post_deployment_end, post_pg_license]
+  requires: [post_deployment_start, setup-director]
+  type: puppet
+  parameters:
+    puppet_manifest: puppet/manifests/director.pp
+    puppet_modules: puppet/modules:/etc/puppet/modules
+    timeout: 3000
+
+- id: post_pg_license
+  role: ['primary-controller']
+  required_for: [post_deployment_end, setup-edge, setup-gateway]
+  requires: [post_deployment_start, director-fixes]
+  type: shell
+  parameters:
+    cmd: bash post_pg_license.sh
+    timeout: 3000
+
+- id: setup-edge
+  role: ['compute']
+  required_for: [post_deployment_end]
+  requires: [post_deployment_start, post_pg_license]
+  type: puppet
+  parameters:
+    puppet_manifest: puppet/manifests/edge.pp
+    puppet_modules: puppet/modules:/etc/puppet/modules
+    timeout: 3000
+
+- id: setup-gateway
+  role: ['PLUMgrid-Gateway']
+  required_for: [post_deployment_end, cleanup_os]
+  requires: [post_deployment_start, post_pg_license]
+  type: puppet
+  parameters:
+    puppet_manifest: puppet/manifests/gateway.pp
+    puppet_modules: puppet/modules:/etc/puppet/modules
+    timeout: 3000
+
+- id: cleanup_os
+  role: ['primary-controller']
+  required_for: [post_deployment_end]
+  requires: [post_deployment_start, setup-gateway]
+  type: shell
+  parameters:
+    cmd: bash cleanup_os.sh
+    timeout: 3000
