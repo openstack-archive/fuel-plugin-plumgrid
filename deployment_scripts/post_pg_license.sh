@@ -25,8 +25,8 @@ if [[ ! -f "/root/post_director" ]];then
   http_status=""
 
   while [[ "$http_status" != "200" ]]; do
-    if [[ $retry_cnt -ge 30 ]]; then
-      echo "Failed to login to platform for 60 seconds, exiting..."
+    if [[ $retry_cnt -ge 150 ]]; then
+      echo "Failed to login to platform for 5 minutes, exiting..."
       exit 1
     fi
 
