@@ -78,7 +78,7 @@
 
 - id: post_pg_license
   role: ['primary-controller']
-  required_for: [post_deployment_end, setup-edge, setup-gateway]
+  required_for: [post_deployment_end, setup-edge]
   requires: [post_deployment_start, director-fixes]
   type: shell
   parameters:
@@ -87,7 +87,7 @@
 
 - id: setup-edge
   role: ['compute']
-  required_for: [post_deployment_end]
+  required_for: [post_deployment_end, setup-gateway]
   requires: [post_deployment_start, post_pg_license]
   type: puppet
   parameters:
@@ -98,7 +98,7 @@
 - id: setup-gateway
   role: ['PLUMgrid-Gateway']
   required_for: [post_deployment_end, cleanup_os]
-  requires: [post_deployment_start, post_pg_license]
+  requires: [post_deployment_start, setup-edge]
   type: puppet
   parameters:
     puppet_manifest: puppet/manifests/gateway.pp
