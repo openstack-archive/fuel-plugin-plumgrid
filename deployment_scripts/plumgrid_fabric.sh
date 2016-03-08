@@ -17,6 +17,19 @@
 
 . /tmp/plumgrid_config
 
+function check_and_replace() {
+  local check_line=$1
+  local replace_line=$2
+  local file=$3
+  grep -q "$check_line" $file
+  if [[ $? -ne 0 ]]; then
+    sed -i "$ a\\$replace_line" $file
+  else
+    sed -i "s/$check_line.*/$replace_line/g" $file
+  fi
+  return 0
+}
+
 fabric_ip=$(ip addr show br-mgmt | awk '$1=="inet" {print $2}' | awk -F '/' '{print $1}' | awk -F '.' '{print $4}' | head -1)
 fabric_dev=$(brctl show br-mgmt | awk -F ' ' '{print $4}' | awk 'FNR == 2 {print}' | awk -F '.' '{print $1}')
 
@@ -38,11 +51,12 @@ fabric_net=$(echo $fabric_network | cut -f2 -d: | cut -f1-3 -d.)
 ifconfig $fabric_dev $fabric_net.$fabric_ip netmask $fabric_netmask
 ifconfig $fabric_dev mtu 1580
 
-if [[ -f "/etc/network/interfaces.d/ifcfg-$fabric_dev" ]];then
-  rm /etc/network/interfaces.d/ifcfg-$fabric_dev
-fi
+check_and_replace "iface " "iface $fabric_dev inet static" /etc/network/interfaces.d/ifcfg-$fabric_dev
+check_and_replace "address " "address $fabric_net.$fabric_ip" /etc/network/interfaces.d/ifcfg-$fabric_dev
+check_and_replace "netmask " "netmask $fabric_netmask" /etc/network/interfaces.d/ifcfg-$fabric_dev
+check_and_replace "mtu " "mtu 1580" /etc/network/interfaces.d/ifcfg-$fabric_dev
 
-echo -e "auto $fabric_dev\niface $fabric_dev inet static\naddress $fabric_net.$fabric_ip/24\nmtu 1580" >> /etc/network/interfaces.d/ifcfg-$fabric_dev
+sed -i "/bridge_port.*/d" /etc/network/interfaces.d/ifcfg-$fabric_dev
 
 grep -q -F "fabric_dev: $fabric_dev" /etc/astute.yaml || echo "fabric_dev: $fabric_dev" >> /etc/astute.yaml
 
