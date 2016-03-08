@@ -38,7 +38,7 @@ Building the plugin
 
 3. Navigate to the cloned PLUMgrid Fuel plugin folder and build the plugin:
 
- ``cd plumgrid-fuel-plugin/``
+ ``cd fuel-plugin-plumgrid/``
 
  ``fpb --build .``
 
