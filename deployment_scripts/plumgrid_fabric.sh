@@ -15,6 +15,12 @@
 
 #!/bin/bash
 
+mkdir -p /var/log/plumgrid
+exec > /var/log/plumgrid/plumgrid_fabric.log
+exec 2>&1
+
+set -x
+
 . /tmp/plumgrid_config
 
 function check_and_replace() {

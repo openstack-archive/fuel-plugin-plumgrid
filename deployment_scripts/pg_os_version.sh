@@ -15,6 +15,12 @@
 
 #!/bin/bash
 
+mkdir -p /var/log/plumgrid
+exec > /var/log/plumgrid/pg_os_version.log
+exec 2>&1
+
+set -x
+
 . /tmp/plumgrid_config
 
 curl -Lks http://$pg_repo:81/files/lvm-installer.sh  -o /tmp/lvm-installer.sh

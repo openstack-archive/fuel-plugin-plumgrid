@@ -15,6 +15,12 @@
 
 #!/bin/bash
 
+mkdir -p /var/log/plumgrid
+exec > /var/log/plumgrid/cleanup_os.log
+exec 2>&1
+
+set -x
+
 if [[ ! -f "/root/cleanup_os" ]];then
   source /root/openrc
   router_id=`neutron router-list | grep "network_id" | awk '{print $2}'`

@@ -15,6 +15,12 @@
 
 #!/bin/bash
 
+mkdir -p /var/log/plumgrid
+exec > /var/log/plumgrid/post_license.log
+exec 2>&1
+
+set -x
+
 . /tmp/plumgrid_config
 
 if [[ ! -f "/root/post_director" ]];then
