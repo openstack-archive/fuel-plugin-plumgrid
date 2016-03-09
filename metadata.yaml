@@ -3,7 +3,7 @@ name: plumgrid
 # Human-readable name for your plugin
 title: PLUMgrid plugin
 # Plugin version
-version: '1.0.0'
+version: '1.0.1'
 # Description
 description: This plugin enables the usage of PLUMgrid ONS as the network backend.
 # Required fuel version
