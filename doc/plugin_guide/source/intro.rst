@@ -2,7 +2,7 @@ Introduction
 ============
 
 This document contains instructions for installing and configuring the PLUMgrid plugin for Fuel.
-In order to use the PLUMgrid ONS Virtual Network Infrastructure for a Mirantis OpenStack Cloud.
+In order to use the PLUMgrid ONS Virtual Network Infrastructure for a Mirantis OpenStack Cloud, follow the Installation Guide.
 
 Key terms, acronyms and abbreviations
 -------------------------------------

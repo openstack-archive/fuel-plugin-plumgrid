@@ -11,6 +11,6 @@ Guide to PLUMgrid Plugin ver. 1.0-1.0.1-1 for Fuel 7.0
    :maxdepth: 2
    :numbered:
 
-    intro
-    requirements
-    install_guide
+   intro
+   requirements
+   install_guide

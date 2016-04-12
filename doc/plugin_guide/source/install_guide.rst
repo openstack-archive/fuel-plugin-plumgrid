@@ -8,7 +8,7 @@ This document assumes that you have `installed Fuel <https://docs.mirantis.com/o
 and setup the target hosts with appropriate networking for the pxe, management, public and plumgrid-fabric networks. The nodes
 must be discovered and functional prior to doing the following steps.
 
-Obtain a PLUMgrid ONS license and access to packages or LCM image at info@plumgrid.com
+Obtain a PLUMgrid ONS license and access to packages or LCM image by emailing Support at info@plumgrid.com.
 
 Installing Fuel PLUMgrid Plugin
 -------------------------------
@@ -25,7 +25,7 @@ Installing Fuel PLUMgrid Plugin
       cd /tmp
       fuel plugins --install plumgrid-<x.x.x>.rpm
 
-   You should get the following output
+   You should get the following output:
    ::
 
       Plugin <plugin-name-version>.rpm was successfully installed
@@ -38,8 +38,8 @@ Installing Fuel PLUMgrid Plugin
 #. The plugin is now ready for use and can be enabled on the Settings tab, PLUMgrid Plugin section
    of the Fuel web UI, as explained next.
 
-Configuring PLUmgrid Plugin
----------------------------
+Configuring a New Environment
+-----------------------------
 
 #. In Fuel UI `create environment <https://docs.mirantis.com/openstack/fuel/fuel-7.0/user-guide.html#create-a-new-openstack-environment>`_.
 
@@ -58,8 +58,10 @@ Configuring PLUmgrid Plugin
     .. image:: images/networking_setup.png
        :width: 80%
 
+Configuring PLUMgrid Plugin
+---------------------------
 
-#. After creating the enviroment, navigate to Settings → Fuel PLUMgrid plugin. Check the Fuel PLUMgrid Pluginbox and fill in the appropiate values for the your enviroment.
+#. After creating the enviroment, navigate to Settings → Fuel PLUMgrid plugin. Check the Fuel PLUMgrid Pluginbox and fill in the appropiate values for the enviroment.
 
    .. image:: images/plumgrid_ui_setup.png
        :width: 80%
@@ -79,7 +81,10 @@ Configuring PLUmgrid Plugin
 
   * **Enter the license for PLUMgrid:** Enter the PLUMgrid license string provided by PLUMgrid support.
 
-  * **Enter the interface(s) to be used by GW:** Enter the interfaces that will be used for external connectivity by the PLUMgrid Gateway comma separated for more than one.
+  * **Enter the interface(s) to be used by GW:** Enter the interfaces that will be used for external connectivity by the PLUMgrid Gateway, comma separated for more than one.
+
+Deployment Settings
+-------------------
 
 #. Navigate to Repositories tab and click Add Extra Repo and provide the following PLUMgrid repositories:
    ::
@@ -90,13 +95,13 @@ Configuring PLUmgrid Plugin
    .. image:: images/plumgrid_repos.png
        :width: 80%
 
-#. Navigate to the Nodes tab to and click on Add nodes:
+#. Navigate to the Nodes tab and click on Add nodes:
 
    .. image:: images/add_nodes.png
        :width: 80%
 
 
-Assign the unallocated nodes their respective roles. Select the role i.e. Controller/Compute/PLUMgrid-Gateway and select the node which will assume that role. This process must be repeated for each node individually:
+   Assign the unallocated nodes their respective roles. Select the role i.e. Controller/Compute/PLUMgrid-Gateway and select the node which will assume that role. This process must be repeated for every node individually:
 
    .. image:: images/add_controllers.png
        :width: 80%
@@ -114,7 +119,7 @@ Assign the unallocated nodes their respective roles. Select the role i.e. Contro
 
 #. Press **Deploy changes** to `deploy the environment <https://docs.mirantis.com/openstack/fuel/fuel-7.0/user-guide.html#deploy-changes>`_.
 
-#. After a succesful deployment. The PLUMgrid UI will be accessible for the VIP entered in the PLUMgrid Settings
+#. After a succesful deployment. The PLUMgrid UI will be accessible on the VIP entered in the PLUMgrid Settings.
    ::
       https://<PG-VIP>
 
@@ -128,6 +133,6 @@ Assign the unallocated nodes their respective roles. Select the role i.e. Contro
       neutron net-create net1
       neutron router-create router1
 
-The newly created network and router should be visible in Horizon.
+   The newly created network and router should be visible in Horizon and the PLUMgrid UI
 
-#. For further details on usability & features, contact PLUMgrid at info@plumgrid.com to obtain official documentation.
+#. For further details on usability & features, and to obtain official documentation, contact PLUMgrid at info@plumgrid.com.
