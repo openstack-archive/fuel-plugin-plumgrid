@@ -18,9 +18,9 @@ Given below are some commonly used terms across this document:
 +--------------------+-------------------------------------------------------------------+
 | Virtual Domain     | A Virtual Domain is a logical data center. It can be created on   |
 |                    | demand to provide all the networking services (e.g. Routers,      |
-|                    | Switches, IPAM, DHCP, NAT, etc.) necessary to build a vitrual     |
-|                    | network for a tenant in OpenStack. Typically, each OpenStack      |
-|                    | tenant will map to a unique Virtual Domain in the PLUMgrid.       |
+|                    | Switches, IPAM, DHCP, NAT, etc.) necessary to build a virtual     |
+|                    | network for a project in OpenStack. Typically, each OpenStack     |
+|                    | project will map to a unique Virtual Domain in the PLUMgrid.      |
 +--------------------+-------------------------------------------------------------------+
 | Zone               | Represents the physical deployment of PLUMgrid ONS. A Zone is     |
 |                    | primarily a collection of Edges & Gateways that are dependent on  |
@@ -65,7 +65,7 @@ suite lets users create private Virtual Domains to provide isolation, security, 
 
 PLUMgrid ONS features:
 
-*   Performance: Up to 40 Gbps per server; hardwarde Offload; terbytes of aggregate performance.
+*   Performance: Up to 40 Gbps per server; hardware offload; terabytes of aggregate performance.
 
 *   Scalable: across virtual domains, workloads and multiple racks, geographies.
 
@@ -73,7 +73,7 @@ PLUMgrid ONS features:
 
 *   Secure: end-to-end encryption within Virtual Domains and isolation across tenants.
 
-*   Operational tools: includes a comprehensive suite of powerful networking monitoring and troubleshooting tools.
+*   Operational tools: includes a comprehensive suite of powerful networking, monitoring and troubleshooting tools.
 
 Licensing information
 ---------------------
