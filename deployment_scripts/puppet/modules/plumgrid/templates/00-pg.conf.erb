@@ -1,0 +1,2 @@
+$template ls_json,"{%timestamp:::date-rfc3339,jsonf:@timestamp%,%source:::jsonf:@source_host%,%msg:::json%}"
+:syslogtag,isequal,"pg:" @<%= @md_ip %>:6000;ls_json

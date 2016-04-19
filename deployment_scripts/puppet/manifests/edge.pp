@@ -32,12 +32,14 @@ $controller_ipaddresses = join(hiera_array('controller_ipaddresses', values($con
 $mgmt_net               = hiera('management_network_range')
 $fabric_dev             = hiera('fabric_dev')
 $plumgrid_zone          = pick($plumgrid_hash['plumgrid_zone'])
+$md_ip                  = pick($plumgrid_hash['plumgrid_opsvm'])
 
 class { 'plumgrid':
   plumgrid_ip => $controller_ipaddresses,
-  mgmt_dev => 'br-mgmt',
-  fabric_dev => $fabric_dev,
+  mgmt_dev    => 'br-mgmt',
+  fabric_dev  => $fabric_dev,
   lvm_keypath => "/var/lib/plumgrid/zones/$plumgrid_zone/id_rsa.pub",
+  md_ip       => $md_ip,
 }
 
 class { plumgrid::firewall:

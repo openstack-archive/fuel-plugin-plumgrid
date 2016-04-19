@@ -69,7 +69,16 @@ attributes:
   plumgrid_fabric_network:
     value: ''
     label: 'Enter the PLUMgrid Fabric Network'
-    description: 'Enter the network that will be used by PLUMgrid Fabric (no need to enter subnet)'
+    description: 'Enter the network that will be used by PLUMgrid Fabric (no need to enter subnet mask)'
+    weight: 32
+    type: "text"
+    regex:
+      source: '^((?:\d|1?\d\d|2[0-4]\d|25[0-5])(?:\.(?:\d|1?\d\d|2[0-4]\d|25[0-5])){3})|(?:^)$'
+      error: "Invalid IP address"
+  plumgrid_opsvm:
+    value: '127.0.0.0'
+    label: 'Enter the OPSVM IP'
+    description: 'Enter the IP for the OPSVM'
     weight: 32
     type: "text"
     regex:

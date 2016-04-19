@@ -27,6 +27,7 @@ class plumgrid (
   $lvm_keypath = '',
   $mcollective = false,
   $manage_repo = $plumgrid::params::manage_repo,
+  $md_ip = '127.0.0.1',
   $repo_baseurl = '',
   $repo_component = '',
   $physical_location = '',
@@ -55,6 +56,13 @@ class plumgrid (
       target => "${lxc_data_path}/root/.ssh/authorized_keys",
       require => Package[$pg_package],
       before => Service['plumgrid'],
+    }
+  }
+  if $md_ip != '127.0.0.1'  {
+    file { "${lxc_data_path}/conf/etc/00-pg.conf":
+      content => template('plumgrid/00-pg.conf.erb'),
+      require => Package[$pg_package],
+      notify => Service['plumgrid'],
     }
   }
   file { "${lxc_data_path}/conf/etc/hostname":

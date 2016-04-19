@@ -14,6 +14,7 @@
 # limitations under the License.
 
 class sal::nginx ($plumgrid_ip = '',
+                  $md_ip = '127.0.0.1',
                   $virtual_ip = '',
                   $use_default_cert = true,
                   ) {

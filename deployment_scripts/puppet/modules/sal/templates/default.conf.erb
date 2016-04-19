@@ -13,7 +13,7 @@ upstream pgCli {
 }
 
 upstream pgMW {
-  server 127.0.0.1:4000;
+  server <%= @md_ip %>:4000;
 }
 
 map $http_upgrade $connection_upgrade {

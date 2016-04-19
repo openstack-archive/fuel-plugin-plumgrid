@@ -17,6 +17,7 @@ class sal ($plumgrid_ip = '',
            $virtual_ip = '',
            $rest_port = '9180',
            $mgmt_dev = '%AUTO_DEV%',
+           $md_ip = '127.0.0.1',
            ) {
   $lxc_root_path = '/var/lib/libvirt/filesystems/plumgrid'
   $lxc_data_path = '/var/lib/libvirt/filesystems/plumgrid-data'
@@ -31,6 +32,7 @@ class sal ($plumgrid_ip = '',
 
   class { 'sal::nginx':
     plumgrid_ip => $plumgrid_ip,
+    md_ip => $md_ip,
     virtual_ip => $virtual_ip,
   }
   class { 'sal::keepalived':
