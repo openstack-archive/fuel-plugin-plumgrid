@@ -73,6 +73,7 @@ class { 'plumgrid':
 class { 'sal':
   plumgrid_ip => $controller_ipaddresses,
   virtual_ip  => $plumgrid_vip,
+  md_ip         => $md_ip,
 }
 
 class { plumgrid::firewall:
