@@ -71,8 +71,12 @@ server {
     proxy_set_header Host $host;
   }
 
-  location /cloudApex/ {
+  location ~ /cloudApex {
     index index.html;
+  }
+
+  location ~* /cloudapex {
+    rewrite (?i)/cloudapex(.*)$ /cloudApex$1 last;
   }
 
   location /vtap/ {

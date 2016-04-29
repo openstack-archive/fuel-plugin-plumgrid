@@ -66,13 +66,14 @@ class { 'plumgrid':
   plumgrid_ip  => $controller_ipaddresses,
   mgmt_dev     => 'br-mgmt',
   fabric_dev   => $fabric_dev,
-  lvm_keypath   => "/var/lib/plumgrid/zones/$plumgrid_zone/id_rsa.pub",
-  md_ip         => $md_ip,
+  lvm_keypath  => "/var/lib/plumgrid/zones/$plumgrid_zone/id_rsa.pub",
+  md_ip        => $md_ip,
 }
 
 class { 'sal':
   plumgrid_ip => $controller_ipaddresses,
   virtual_ip  => $plumgrid_vip,
+  md_ip       => $md_ip,
 }
 
 class { plumgrid::firewall:
