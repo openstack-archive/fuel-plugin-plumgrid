@@ -61,7 +61,7 @@ Configuring a New Environment
 Configuring PLUMgrid Plugin
 ---------------------------
 
-#. After creating the enviroment, navigate to Settings → Fuel PLUMgrid plugin. Check the Fuel PLUMgrid Pluginbox and fill in the appropriate values for the enviroment.
+#. After creating the environment, navigate to Settings → Fuel PLUMgrid plugin. Check the Fuel PLUMgrid Pluginbox and fill in the appropriate values for the environment.
 
    .. image:: images/plumgrid_ui_setup.png
        :width: 80%
@@ -119,7 +119,7 @@ Deployment Settings
 
 #. Press **Deploy changes** in the Dashboard tab to `deploy the environment <https://docs.mirantis.com/openstack/fuel/fuel-7.0/user-guide.html#deploy-changes>`_.
 
-#. After a succesful deployment, the PLUMgrid UI will be accessible on the VIP entered in the PLUMgrid Settings.
+#. After a successful deployment, the PLUMgrid UI will be accessible on the VIP entered in the PLUMgrid Settings.
    ::
       https://<PG-VIP>
 
