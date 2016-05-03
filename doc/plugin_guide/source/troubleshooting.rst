@@ -1,5 +1,5 @@
-Troubleshootig
-==============
+Troubleshooting
+===============
 
 
 #. When PLUMgrid tasks fail during deployment.
