@@ -54,6 +54,8 @@ $neutron_db_uri = "mysql://${neutron_db_user}:${neutron_db_password}@${neutron_d
 
 # OpenStack Access settings
 $access_hash              = hiera_hash('access', {})
+$admin_username           = pick($access_hash['user'])
+$admin_tenant             = pick($access_hash['tenant'])
 $admin_password           = pick($access_hash['password'])
 
 # Add fuel node fqdn to /etc/hosts
@@ -168,4 +170,12 @@ file { 'plumgrid_plugin.py':
   mode   => '0644',
   source => 'puppet:///modules/plumgrid/plumgrid_plugin.py',
   notify   => Service["$::neutron::params::server_service"]
+}
+
+# Update PLUMgrid pgrc file
+
+file { 'pgrc':
+  ensure => present,
+  path => '/etc/neutron/plugins/plumgrid/pgrc',
+  content => "export os_auth_url=http://$service_endpoint:35357/v2.0\nexport os_admin_user=$admin_username\nexport os_admin_tenant=$admin_tenant\nexport os_admin_password=$admin_password\nexport pg_virtual_ip=$plumgrid_vip\nexport pg_username=$plumgrid_username\nexport pg_password=$plumgrid_password",
 }
