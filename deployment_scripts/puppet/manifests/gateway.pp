@@ -36,9 +36,6 @@ class { 'plumgrid':
   gateway_devs => split($plumgrid_gw_devs, ','),
   lvm_keypath  => "/var/lib/plumgrid/zones/$plumgrid_zone/id_rsa.pub",
   md_ip        => $md_ip,
-}
-
-class { plumgrid::firewall:
   source_net => $mgmt_net,
   dest_net   => $mgmt_net,
 }
