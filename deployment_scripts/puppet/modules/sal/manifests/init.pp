@@ -17,6 +17,7 @@ class sal ($plumgrid_ip = '',
            $virtual_ip = '',
            $rest_port = '9180',
            $mgmt_dev = '%AUTO_DEV%',
+           $source_net = undef,
            $md_ip = '127.0.0.1',
            ) {
   $lxc_root_path = '/var/lib/libvirt/filesystems/plumgrid'
@@ -28,6 +29,21 @@ class sal ($plumgrid_ip = '',
     proto  => tcp,
     action => accept,
     before => [ Class['sal::nginx'], Class['sal::keepalived'] ],
+  }
+
+  if $source_net != undef {
+    firewall { '040 allow vrrp':
+        proto       => 'vrrp',
+        action      => 'accept',
+        before => [ Class['sal::nginx'], Class['sal::keepalived'] ],
+    }
+    firewall { '040 keepalived':
+        proto       => 'all',
+        action      => 'accept',
+        destination => '224.0.0.18/32',
+        source      => $source_net,
+        before => [ Class['sal::nginx'], Class['sal::keepalived'] ],
+    }
   }
 
   class { 'sal::nginx':
