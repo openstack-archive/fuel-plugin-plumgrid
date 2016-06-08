@@ -31,6 +31,8 @@ class plumgrid (
   $repo_baseurl = '',
   $repo_component = '',
   $physical_location = '',
+  $source_net = undef,
+  $dest_net = undef,
 ) inherits plumgrid::params {
   Exec { path => [ '/bin', '/sbin' , '/usr/bin', '/usr/sbin', '/usr/local/bin', ] }
 
@@ -104,6 +106,25 @@ class plumgrid (
     command => "sed \"s/%AUTO_DEV%/`head -n1 ${lxc_data_path}/conf/pg/.auto_dev-fabric`/g\" ${lxc_data_path}/conf/pg/.ifcs.conf > ${lxc_data_path}/conf/pg/ifcs.conf",
     subscribe => Exec['pick-fabric_dev-by-route'],
     notify => Service['plumgrid'],
+  }
+
+  if $source_net != undef {
+    firewall { '001 plumgrid udp':
+      proto       => 'udp',
+      action      => 'accept',
+      state       => ['NEW'],
+      destination => $dest_net,
+      source      => $source_net,
+      before => Service['plumgrid'],
+    }
+    firewall { '001 plumgrid rpc':
+      proto       => 'tcp',
+      action      => 'accept',
+      state       => ['NEW'],
+      destination => $dest_net,
+      source      => $source_net,
+      before => Service['plumgrid'],
+    }
   }
 
   service { 'plumgrid':
