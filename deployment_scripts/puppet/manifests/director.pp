@@ -70,17 +70,15 @@ class { 'plumgrid':
   fabric_dev   => $fabric_dev,
   lvm_keypath  => "/var/lib/plumgrid/zones/$plumgrid_zone/id_rsa.pub",
   md_ip        => $md_ip,
+  source_net   => $mgmt_net,
+  dest_net     => $mgmt_net,
 }
 
 class { 'sal':
   plumgrid_ip => $controller_ipaddresses,
   virtual_ip  => $plumgrid_vip,
   md_ip       => $md_ip,
-}
-
-class { plumgrid::firewall:
   source_net => $mgmt_net,
-  dest_net   => $mgmt_net,
 }
 
 # Setup Neutron PLUMgrid Configurations
