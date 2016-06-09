@@ -27,7 +27,6 @@ $plumgrid_vip           = pick($plumgrid_hash['plumgrid_virtual_ip'])
 $plumgrid_zone          = pick($plumgrid_hash['plumgrid_zone'])
 $plumgrid_username      = pick($plumgrid_hash['plumgrid_username'])
 $plumgrid_password      = pick($plumgrid_hash['plumgrid_password'])
-$networking_pg_version  = hiera('networking_pg_version', '2015.1.1.1')
 
 # PLUMgrid Zone settings
 $network_metadata       = hiera_hash('network_metadata')
@@ -101,7 +100,7 @@ file { '/etc/neutron/neutron.conf':
 
 file_line { 'Enable PLUMgrid core plugin':
   path => '/etc/neutron/neutron.conf',
-  line => 'core_plugin=neutron.plugins.plumgrid.plumgrid_plugin.plumgrid_plugin.NeutronPluginPLUMgridV2',
+  line => 'core_plugin=networking_plumgrid.neutron.plugins.plugin.NeutronPluginPLUMgridV2',
   match => '^core_plugin.*$',
   require => File['/etc/neutron/neutron.conf'],
 }
@@ -132,6 +131,15 @@ file_line { 'Set libvirt cpu mode':
   require => File['/etc/nova/nova.conf']
 }
 
+# MOS8 uses the outdated PLUMgrid plugin string in the plugin guess function
+
+file_line { 'Replace plugin name in guess function':
+   path     => '/usr/share/neutron-common/plugin_guess_func',
+   match    => '"neutron.plugins.plumgrid.plumgrid_nos_plugin.plumgrid_plugin.NeutronPluginPLUMgridV2"',
+   line     => "\t\"networking_plumgrid.neutron.plugins.plugin.NeutronPluginPLUMgridV2\")",
+   multiple => true
+}
+
 # Setting PLUMgrid Config Files
 
 class { '::neutron::plugins::plumgrid':
@@ -145,29 +153,12 @@ class { '::neutron::plugins::plumgrid':
   nova_metadata_port           => '8775',
   metadata_proxy_shared_secret => $metadata_secret,
   package_ensure               => 'latest',
-}->
-package { 'networking-plumgrid':
-  ensure   => $networking_pg_version,
-  provider => 'pip',
-  notify   => Service["$::neutron::params::server_service"],
 }
 
-if ($networking_pg_version != '2015.1.1.1'){
-  exec { "plumgrid-db-manage upgrade heads":
-    command => "/usr/local/bin/plumgrid-db-manage upgrade heads",
-    notify  => Service["$::neutron::params::server_service"],
-    require => Package['networking-plumgrid']
-  }
-}
-
-# Update PLUMgrid plugin file
-
-file { 'plumgrid_plugin.py':
-  path => '/usr/lib/python2.7/dist-packages/neutron/plugins/plumgrid/plumgrid_plugin/plumgrid_plugin.py',
-  ensure => present,
-  mode   => '0644',
-  source => 'puppet:///modules/plumgrid/plumgrid_plugin.py',
-  notify   => Service["$::neutron::params::server_service"]
+exec { "neutron-db-manage upgrade heads":
+  command => "/usr/bin/neutron-db-manage upgrade heads",
+  notify  => Service["$::neutron::params::server_service"],
+  require => Package['networking-plumgrid']
 }
 
 # Update PLUMgrid pgrc file
@@ -176,4 +167,20 @@ file { 'pgrc':
   ensure => present,
   path => '/etc/neutron/plugins/plumgrid/pgrc',
   content => "export os_auth_url=http://$service_endpoint:35357/v2.0\nexport os_admin_user=$admin_username\nexport os_admin_tenant=$admin_tenant\nexport os_admin_password=$admin_password\nexport pg_virtual_ip=$plumgrid_vip\nexport pg_username=$plumgrid_username\nexport pg_password=$plumgrid_password",
+}
+
+exec { 'Add iptables rule for metadata':
+  command => '/sbin/iptables -A INPUT -p tcp -m multiport --ports 8775 -m comment --comment "000 metadata rule" -j ACCEPT'
+}
+
+exec { 'Add iptables rule for Solutions api':
+  command => '/sbin/iptables -I INPUT -p tcp --dport 8099 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT'
+}
+
+exec { 'Save iptables rule':
+  command => '/sbin/iptables-save >> /etc/iptables/rules.v4'
+}
+
+exec { "Restart plumgrid":
+  command => "/usr/bin/service plumgrid restart",
 }
