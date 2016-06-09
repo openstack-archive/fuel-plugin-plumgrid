@@ -31,20 +31,11 @@
 - id: pg_common
   role: ['controller', 'compute', 'PLUMgrid-Gateway', 'primary-controller']
   required_for: [post_deployment_end, pg_fabric]
-  requires: [post_deployment_start, check-pgzone]
+  requires: [post_deployment_start, check-pgzone, configure_default_route, openstack-network-common-config]
   type: puppet
   parameters:
     puppet_manifest: puppet/manifests/pg_common.pp
     puppet_modules: puppet/modules:/etc/puppet/modules
-    timeout: 3000
-
-- id: pg_os_version
-  role: ['controller', 'primary-controller']
-  required_for: [post_deployment_end, setup-director]
-  requires: [post_deployment_start, pg_common]
-  type: shell
-  parameters:
-    cmd: bash pg_os_version.sh
     timeout: 3000
 
 - id: pg_fabric
@@ -59,7 +50,7 @@
 - id: setup-director
   role: ['controller', 'primary-controller']
   required_for: [post_deployment_end, director-fixes]
-  requires: [post_deployment_start, pg_os_version, pg_fabric]
+  requires: [post_deployment_start, pg_fabric]
   type: puppet
   parameters:
     puppet_manifest: puppet/manifests/director.pp
