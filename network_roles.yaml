@@ -1,5 +1,5 @@
 - id: "fabric"
-  default_mapping: "management"
+  default_mapping: "Fabric"
   properties:
     subnet: true
     gateway: false

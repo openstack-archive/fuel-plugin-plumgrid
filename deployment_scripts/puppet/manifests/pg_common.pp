@@ -22,17 +22,29 @@ $metadata_hash = hiera_hash('quantum_settings', {})
 $metadata = pick($metadata_hash['metadata']['metadata_proxy_shared_secret'], 'root')
 
 $plumgrid_hash = hiera_hash('plumgrid', {})
+$plumgrid_username      = pick($plumgrid_hash['plumgrid_username'])
+$plumgrid_password      = pick($plumgrid_hash['plumgrid_password'])
 $plumgrid_pkg_repo = pick($plumgrid_hash['plumgrid_package_repo'])
 $plumgrid_lic = pick($plumgrid_hash['plumgrid_license'])
 $plumgrid_vip = pick($plumgrid_hash['plumgrid_virtual_ip'])
 $plumgrid_zone = pick($plumgrid_hash['plumgrid_zone'])
 $fabric_network = pick($plumgrid_hash['plumgrid_fabric_network'])
+$opsvm_ip                  = pick($plumgrid_hash['plumgrid_opsvm'])
+$fuel_version           = hiera('fuel_version')
+$cobbler                = hiera_hash('cobbler')
+$hypervisor             = pick($cobbler['profile'])
 
 $network_metadata = hiera_hash('network_metadata')
 $haproxy_vip = pick($network_metadata['vips']['public']['ipaddr'])
 $controller_nodes = get_nodes_hash_by_roles($network_metadata, ['primary-controller', 'controller'])
 $controller_address_map = get_node_to_ipaddr_map_by_network_role($controller_nodes, 'mgmt/vip')
 $controller_ipaddresses = join(hiera_array('controller_ipaddresses', values($controller_address_map)), ',')
+$compute_nodes          = get_nodes_hash_by_roles($network_metadata, ['compute'])
+$compute_address_map    = get_node_to_ipaddr_map_by_network_role($compute_nodes, 'mgmt/vip')
+$compute_ipaddresses    = join(hiera_array('compute_ipaddresses', values($compute_address_map)), ',')
+$gateway_nodes          = get_nodes_hash_by_roles($network_metadata, ['PLUMgrid-Gateway'])
+$gateway_address_map    = get_node_to_ipaddr_map_by_network_role($gateway_nodes, 'mgmt/vip')
+$gateway_ipaddresses    = join(hiera_array('gateway_ipaddresses', values($gateway_address_map)), ',')
 
 $pg_packages = [ 'python-pip', 'apparmor-utils' ]
 
@@ -54,13 +66,19 @@ exec { "apt-get update":
 
 file { '/tmp/plumgrid_config':
   ensure  => file,
-  content => "fuel_hostname=$fuel_hostname\nhaproxy_vip=$haproxy_vip\ndirector_ip=$controller_ipaddresses\nedge_ip=$compute_ipaddresses\nmetadata_secret=$metadata\nlicense=$plumgrid_lic\nvip=$plumgrid_vip\npg_repo=$plumgrid_pkg_repo\nzone_name=$plumgrid_zone\nfabric_network=$fabric_network",
+  content => "fuel_hostname=$fuel_hostname\nplumgrid_username=$plumgrid_username\nplumgrid_password=$plumgrid_password\nhaproxy_vip=$haproxy_vip\ndirector_ip=$controller_ipaddresses\nedge_ip=$compute_ipaddresses\ngateway_ip=$gateway_ipaddresses\nmetadata_secret=$metadata\nvip=$plumgrid_vip\nopsvm_ip=$opsvm_ip\npg_repo=$plumgrid_pkg_repo\nzone_name=$plumgrid_zone\nfabric_network=$fabric_network\nfuel_version=$fuel_version\nhypervisor=$hypervisor\nlicense=$plumgrid_lic",
 }
 
 exec { 'ovs_rmmod':
   command => 'rmmod openvswitch',
   path    => '/sbin',
   onlyif  => 'lsmod | /bin/grep openvswitch'
+}
+
+exec { 'openvswitch-switch_forceremove':
+  command => 'dpkg -r --force-all openvswitch-switch',
+  path    => '/usr/bin',
+  onlyif  => 'dpkg -l | /bin/grep openvswitch-switch'
 }
 
 package { 'openvswitch-*':
