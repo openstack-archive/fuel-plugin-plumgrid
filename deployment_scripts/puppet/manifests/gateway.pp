@@ -25,7 +25,7 @@ $controller_nodes       = get_nodes_hash_by_roles($network_metadata, ['primary-c
 $controller_address_map = get_node_to_ipaddr_map_by_network_role($controller_nodes, 'mgmt/vip')
 $controller_ipaddresses = join(hiera_array('controller_ipaddresses', values($controller_address_map)), ',')
 $mgmt_net               = hiera('management_network_range')
-$fabric_dev             = hiera('fabric_dev')
+$fabric_dev             = 'br-100000' 
 $plumgrid_zone          = pick($plumgrid_hash['plumgrid_zone'])
 $md_ip                  = pick($plumgrid_hash['plumgrid_opsvm'])
 
