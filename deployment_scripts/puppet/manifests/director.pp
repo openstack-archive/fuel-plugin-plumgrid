@@ -101,7 +101,7 @@ file { '/etc/neutron/neutron.conf':
 
 file_line { 'Enable PLUMgrid core plugin':
   path => '/etc/neutron/neutron.conf',
-  line => 'core_plugin=neutron.plugins.plumgrid.plumgrid_plugin.plumgrid_plugin.NeutronPluginPLUMgridV2',
+  line => 'core_plugin=networking_plumgrid.neutron.plugins.plugin.NeutronPluginPLUMgridV2',
   match => '^core_plugin.*$',
   require => File['/etc/neutron/neutron.conf'],
 }
@@ -132,6 +132,18 @@ file_line { 'Set libvirt cpu mode':
   require => File['/etc/nova/nova.conf']
 }
 
+file_line { 'Disable plugin name guess function':
+  path => '/etc/init/neutron-server.conf',
+  line => '#neutron_core_plugin_to_plugin_name ${CURRENT_PLUGIN} #Disabled because old core PLUMgrid plugin string is used in guess function',
+  match => '^\tneutron_core_plugin_to_plugin_name*',
+}
+
+file_line { 'Disable config file guess function':
+  path => '/etc/init/neutron-server.conf',
+  line => '#neutron_plugin_ini_path ${NEUTRON_PLUGIN_NAME} #Disabled because old core PLUMgrid plugin string is used in guess function',
+  match => '^\tneutron_plugin_ini_path*',
+}
+
 # Setting PLUMgrid Config Files
 
 class { '::neutron::plugins::plumgrid':
@@ -145,29 +157,14 @@ class { '::neutron::plugins::plumgrid':
   nova_metadata_port           => '8775',
   metadata_proxy_shared_secret => $metadata_secret,
   package_ensure               => 'latest',
-}->
-package { 'networking-plumgrid':
-  ensure   => $networking_pg_version,
-  provider => 'pip',
-  notify   => Service["$::neutron::params::server_service"],
 }
 
 if ($networking_pg_version != '2015.1.1.1'){
-  exec { "plumgrid-db-manage upgrade heads":
-    command => "/usr/local/bin/plumgrid-db-manage upgrade heads",
+  exec { "neutron-db-manage upgrade heads":
+    command => "/usr/bin/neutron-db-manage upgrade heads",
     notify  => Service["$::neutron::params::server_service"],
     require => Package['networking-plumgrid']
   }
-}
-
-# Update PLUMgrid plugin file
-
-file { 'plumgrid_plugin.py':
-  path => '/usr/lib/python2.7/dist-packages/neutron/plugins/plumgrid/plumgrid_plugin/plumgrid_plugin.py',
-  ensure => present,
-  mode   => '0644',
-  source => 'puppet:///modules/plumgrid/plumgrid_plugin.py',
-  notify   => Service["$::neutron::params::server_service"]
 }
 
 # Update PLUMgrid pgrc file

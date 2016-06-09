@@ -31,7 +31,7 @@
 - id: pg_common
   role: ['controller', 'compute', 'PLUMgrid-Gateway', 'primary-controller']
   required_for: [post_deployment_end, pg_fabric]
-  requires: [post_deployment_start, check-pgzone]
+  requires: [post_deployment_start, check-pgzone, configure_default_route, dns-client]
   type: puppet
   parameters:
     puppet_manifest: puppet/manifests/pg_common.pp

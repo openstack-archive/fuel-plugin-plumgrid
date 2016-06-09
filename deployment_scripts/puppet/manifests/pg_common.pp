@@ -63,6 +63,12 @@ exec { 'ovs_rmmod':
   onlyif  => 'lsmod | /bin/grep openvswitch'
 }
 
+exec { 'openvswitch-switch_forceremove':
+  command => 'dpkg -r --force-all openvswitch-switch',
+  path    => '/usr/bin',
+  onlyif  => 'dpkg -l | /bin/grep openvswitch-switch'
+}
+
 package { 'openvswitch-*':
   ensure => absent
 }
