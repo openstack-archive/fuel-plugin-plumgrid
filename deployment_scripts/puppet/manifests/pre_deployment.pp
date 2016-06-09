@@ -23,5 +23,4 @@ package { 'libvirt-bin' :
 }
 package { 'networking-plumgrid':
   ensure   => 'absent',
-  provider => 'pip',
 }
