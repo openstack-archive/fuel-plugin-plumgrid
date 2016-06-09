@@ -30,36 +30,18 @@
 
 - id: pg_common
   role: ['controller', 'compute', 'PLUMgrid-Gateway', 'primary-controller']
-  required_for: [post_deployment_end, pg_fabric]
-  requires: [post_deployment_start, check-pgzone]
+  required_for: [post_deployment_end, setup-director]
+  requires: [post_deployment_start, check-pgzone, configure_default_route]
   type: puppet
   parameters:
     puppet_manifest: puppet/manifests/pg_common.pp
     puppet_modules: puppet/modules:/etc/puppet/modules
     timeout: 3000
 
-- id: pg_os_version
-  role: ['controller', 'primary-controller']
-  required_for: [post_deployment_end, setup-director]
-  requires: [post_deployment_start, pg_common]
-  type: shell
-  parameters:
-    cmd: bash pg_os_version.sh
-    timeout: 3000
-
-- id: pg_fabric
-  role: ['controller', 'compute', 'PLUMgrid-Gateway', 'primary-controller']
-  required_for: [post_deployment_end, setup-director]
-  requires: [post_deployment_start, pg_common]
-  type: shell
-  parameters:
-    cmd: bash plumgrid_fabric.sh
-    timeout: 3000
-
 - id: setup-director
   role: ['controller', 'primary-controller']
   required_for: [post_deployment_end, director-fixes]
-  requires: [post_deployment_start, pg_os_version, pg_fabric]
+  requires: [post_deployment_start, pg_common]
   type: puppet
   parameters:
     puppet_manifest: puppet/manifests/director.pp
@@ -83,6 +65,26 @@
   type: shell
   parameters:
     cmd: bash post_pg_license.sh
+    timeout: 3000
+
+- id: get_info
+  role: ['primary-controller']
+  required_for: [post_deployment_end, solution-api]
+  requires: [post_deployment_start, post_pg_license]
+  type: puppet
+  parameters:
+    puppet_manifest: puppet/manifests/get_info.pp
+    puppet_modules: puppet/modules:/etc/puppet/modules
+    timeout: 3000
+
+- id: solution-api
+  role: ['primary-controller']
+  required_for: [post_deployment_end, setup-edge]
+  requires: [post_deployment_start, get_info]
+  type: puppet
+  parameters:
+    puppet_manifest: puppet/manifests/solution_api.pp
+    puppet_modules: puppet/modules:/etc/puppet/modules
     timeout: 3000
 
 - id: setup-edge

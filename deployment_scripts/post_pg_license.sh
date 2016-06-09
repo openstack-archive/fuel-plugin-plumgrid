@@ -48,13 +48,13 @@ if [[ ! -f "/root/post_director" ]];then
   done
 
   #Install License
-  install_status=$(curl -H "Accept: application/json" -H "Content-Type: application/json" \
-  https://$vip/0/tenant_manager/license_key/key1 -k -X PUT -d '{"license": '\"$license\"'}' \
-  -i -b /tmp/cookie -k| grep HTTP | awk '{print $2}')
+  install_status=$(curl -H "Accept: application/json" -H "Content-Type: application/json" -X PUT \
+  -d '{"user_name":"plumgrid","password":"plumgrid","license":"'$license'"}' \
+  http://$pg_repo:8099/v1/zones/$zone_name/pgLicense)
 
   echo $install_status
 
-  if [[ $install_status -ne 200 ]]; then
+  if [[ $install_status -ne "{\"status\": \"success\",\"message\":\"Successfully installed PLUMgrid license\",\"data\":}" ]]; then
     echo "Error installing license, exiting..."
     exit 1
   fi
