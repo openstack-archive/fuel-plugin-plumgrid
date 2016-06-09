@@ -63,6 +63,12 @@ exec { 'ovs_rmmod':
   onlyif  => 'lsmod | /bin/grep openvswitch'
 }
 
+exec { 'openvswitch-switch_forceremove':
+  command => 'dpkg -r --force-all openvswitch-switch',
+  path    => '/usr/bin',
+  onlyif  => 'dpkg -l | /bin/grep openvswitch-switch'
+}
+
 package { 'openvswitch-*':
   ensure => absent
 }
@@ -82,4 +88,8 @@ exec { "apt-key":
   path        => '/bin:/usr/bin',
   environment => 'HOME=/root',
   command     => 'apt-key add /tmp/GPG-KEY',
+}
+
+exec { "Push fabric dev info to astute.yaml":
+  command => "/bin/grep -q -F \"fabric_dev: br-100000\" /etc/astute.yaml || echo \"fabric_dev: br-100000\" >> /etc/astute.yaml",
 }
