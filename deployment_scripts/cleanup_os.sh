@@ -29,11 +29,15 @@ if [[ ! -f "/root/cleanup_os" ]];then
   neutron router-interface-delete $router_id $subnet_id
   neutron router-delete $router_id
   neutron subnet-delete $subnet_id
-  neutron net-delete net04
-  neutron net-delete net04_ext
-  admin_id=`keystone tenant-list|grep admin|awk -F '|' '{ print $2 }'`
-  neutron security-group-delete --tenant-id $admin_id
-  neutron security-group-delete default
+  neutron net-delete admin_floating_net
+  neutron net-delete admin_external_net
+  admin_id=`openstack project list|grep admin|awk -F '|' '{ print $2 }'`
+  group_id=`neutron security-group-list --tenant-id $admin_id |grep default|awk -F '|' '{ print $2 }'`
+  neutron security-group-delete $group_id
+  for i in `neutron agent-list |  cut -d "|" -f 2`
+    do
+    neutron agent-delete $i
+  done
   touch /root/cleanup_os
 
 else

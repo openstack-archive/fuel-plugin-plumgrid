@@ -156,3 +156,15 @@ file_line { 'unmount plumgrid.fuse pre-start':
   after   => '/opt/pg/scripts/systemd_pre_start.sh',
   require => Package[$plumgrid::params::plumgrid_package]
 }
+
+exec { 'Add iptables rule for metadata':
+  command => '/sbin/iptables -A INPUT -p tcp -m multiport --ports 8775 -m comment --comment "000 metadata rule" -j ACCEPT'
+}
+
+exec { 'Save iptables rule':
+  command => '/sbin/iptables-save >> /etc/iptables/rules.v4'
+}
+
+exec { 'Place nova sql connection url':
+  command => "/bin/grep -q -F \"connection = mysql://nova:\" /etc/nova/nova.conf || /bin/sed -i '/#connection = <None>/a connection = mysql://nova:$nova_sql_password@32.0.0.21/nova?read_timeout=60' /etc/nova/nova.conf && service nova-api restart"
+}
