@@ -32,3 +32,15 @@ file_line { 'ensure no port conflict between apache-keystone':
   ensure  => 'absent',
   require => File['/etc/apache2/ports.conf']
 }
+
+exec { "Get kernel version":
+  command => "/bin/sed -i '/kernel_version/d' /etc/astute.yaml && /bin/echo \"kernel_version: $(uname -r)\" >> /etc/astute.yaml",
+}
+
+exec { "Get plumgrid version":
+  command => "/bin/sed -i '/plumgrid_version/d' /etc/astute.yaml && /bin/echo \"plumgrid_version: $(dpkg -l | awk '\$2==\"plumgrid-lxc\" { print \$3 }' )\" >> /etc/astute.yaml",
+}
+
+exec { "Get cloudapex version":
+  command => "/bin/sed -i '/cloudapex_version/d' /etc/astute.yaml && /bin/echo \"cloudapex_version: $(cat /var/lib/libvirt/filesystems/plumgrid/opt/pg/web/cloudApex/modules/appCloudApex/appCloudApex.js | grep -i appVersion | awk '{print \$2; exit}' | cut -d ',' -f 1)\" >> /etc/astute.yaml",
+}
