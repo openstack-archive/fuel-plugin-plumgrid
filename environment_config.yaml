@@ -3,6 +3,7 @@ attributes:
     restrictions:
       - condition: "not (cluster:net_provider == 'neutron' and networking_parameters:segmentation_type == 'vlan')"
         message: "Please use Neutron with VLAN segmentation, the only network type supported with PLUMgrid plugin."
+    group: 'other'
   plumgrid_username:
     value: "plumgrid"
     label: "Enter the username for PLUMgrid"
