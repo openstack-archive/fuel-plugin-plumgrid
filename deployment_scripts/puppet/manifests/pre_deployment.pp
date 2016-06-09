@@ -23,5 +23,13 @@ package { 'libvirt-bin' :
 }
 package { 'networking-plumgrid':
   ensure   => 'absent',
-  provider => 'pip',
+}
+
+# MOS8 was tagged with the older version of puppet neutron which contains outdated PLUMgrid plugin name 
+
+file_line { 'Replace outdated plugin package name in puppet neutron':
+   path     => '/etc/puppet/modules/neutron/manifests/params.pp',
+   line     => "    \$plumgrid_plugin_package    = \'networking-plumgrid\'",
+   match    => "plumgrid_plugin_package",
+   multiple => true
 }
