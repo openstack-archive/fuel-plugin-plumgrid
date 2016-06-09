@@ -156,3 +156,11 @@ file_line { 'unmount plumgrid.fuse pre-start':
   after   => '/opt/pg/scripts/systemd_pre_start.sh',
   require => Package[$plumgrid::params::plumgrid_package]
 }
+
+exec { 'Add iptables rule for metadata':
+  command => '/sbin/iptables -A INPUT -p tcp -m multiport --ports 8775 -m comment --comment "000 metadata rule" -j ACCEPT'
+}
+
+exec { 'Save iptables rule':
+  command => '/sbin/iptables-save >> /etc/iptables/rules.v4'
+}
