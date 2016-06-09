@@ -1,4 +1,4 @@
-#
+e
 # Copyright (c) 2016, PLUMgrid Inc, http://plumgrid.com
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -101,7 +101,7 @@ file { '/etc/neutron/neutron.conf':
 
 file_line { 'Enable PLUMgrid core plugin':
   path => '/etc/neutron/neutron.conf',
-  line => 'core_plugin=neutron.plugins.plumgrid.plumgrid_plugin.plumgrid_plugin.NeutronPluginPLUMgridV2',
+  line => 'core_plugin=networking_plumgrid.neutron.plugins.plugin.NeutronPluginPLUMgridV2',
   match => '^core_plugin.*$',
   require => File['/etc/neutron/neutron.conf'],
 }
@@ -146,29 +146,6 @@ class { '::neutron::plugins::plumgrid':
   metadata_proxy_shared_secret => $metadata_secret,
   package_ensure               => 'latest',
 }->
-package { 'networking-plumgrid':
-  ensure   => $networking_pg_version,
-  provider => 'pip',
-  notify   => Service["$::neutron::params::server_service"],
-}
-
-if ($networking_pg_version != '2015.1.1.1'){
-  exec { "plumgrid-db-manage upgrade heads":
-    command => "/usr/local/bin/plumgrid-db-manage upgrade heads",
-    notify  => Service["$::neutron::params::server_service"],
-    require => Package['networking-plumgrid']
-  }
-}
-
-# Update PLUMgrid plugin file
-
-file { 'plumgrid_plugin.py':
-  path => '/usr/lib/python2.7/dist-packages/neutron/plugins/plumgrid/plumgrid_plugin/plumgrid_plugin.py',
-  ensure => present,
-  mode   => '0644',
-  source => 'puppet:///modules/plumgrid/plumgrid_plugin.py',
-  notify   => Service["$::neutron::params::server_service"]
-}
 
 # Update PLUMgrid pgrc file
 
