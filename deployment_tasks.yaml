@@ -8,8 +8,46 @@
     strategy:
       type: parallel
 
+# Skip default neutron plugins
+- id: primary-openstack-network-plugins-l2
+  type: skipped
+- id: openstack-network-plugins-l2
+  type: skipped
+- id: openstack-network-routers-ha
+  type: skipped
+# Skip Neutron agents
+- id: primary-openstack-network-agents-l3
+  type: skipped
+- id: openstack-network-agents-l3
+  type: skipped
+- id: primary-openstack-network-agents-dhcp
+  type: skipped
+- id: openstack-network-agents-dhcp
+  type: skipped
+- id: primary-openstack-network-agents-metadata
+  type: skipped
+- id: openstack-network-agents-metadata
+  type: skipped
+- id: openstack-network-agents-sriov
+  type: skipped
+# Skip default fuel networks and routers
+- id: openstack-network-networks
+  type: skipped
+- id: openstack-network-routers
+  type: skipped
+
+- id: disable-ovs
+  groups: ['controller', 'compute', 'PLUMgrid-Gateway', 'primary-controller']
+  required_for: [netconfig]
+  requires: [deploy_start, globals]
+  type: puppet
+  parameters:
+    puppet_manifest: puppet/manifests/disable_ovs.pp
+    puppet_modules: puppet/modules:/etc/puppet/modules
+    timeout: 120
+
 - id: pgtools-support
-  role: ['controller', 'primary-controller']
+  groups: ['controller', 'primary-controller']
   required_for: [post_deployment_end]
   requires: [post_deployment_start]
   type: puppet
@@ -19,7 +57,7 @@
     timeout: 3000
 
 - id: check-pgzone
-  role: ['controller', 'compute', 'PLUMgrid-Gateway', 'primary-controller']
+  groups: ['controller', 'compute', 'PLUMgrid-Gateway', 'primary-controller']
   required_for: [post_deployment_end, pg_common]
   requires: [post_deployment_start]
   type: puppet
@@ -29,9 +67,9 @@
     timeout: 720
 
 - id: pg_common
-  role: ['controller', 'compute', 'PLUMgrid-Gateway', 'primary-controller']
+  groups: ['controller', 'compute', 'PLUMgrid-Gateway', 'primary-controller']
   required_for: [post_deployment_end, setup-director]
-  requires: [post_deployment_start, check-pgzone, configure_default_route]
+  requires: [post_deployment_start, check-pgzone]
   type: puppet
   parameters:
     puppet_manifest: puppet/manifests/pg_common.pp
@@ -39,7 +77,7 @@
     timeout: 3000
 
 - id: setup-director
-  role: ['controller', 'primary-controller']
+  groups: ['controller', 'primary-controller']
   required_for: [post_deployment_end, director-fixes]
   requires: [post_deployment_start, pg_common]
   type: puppet
@@ -49,7 +87,7 @@
     timeout: 3000
 
 - id: director-fixes
-  role: ['controller', 'primary-controller']
+  groups: ['controller', 'primary-controller']
   required_for: [post_deployment_end, post_pg_license]
   requires: [post_deployment_start, setup-director]
   type: puppet
@@ -69,7 +107,7 @@
 
 - id: solution-api
   role: ['primary-controller']
-  required_for: [post_deployment_end, setup-edge]
+  required_for: [post_deployment_end, setup-edge, setup-gateway]
   requires: [post_deployment_start, post_pg_license]
   type: shell
   parameters:
@@ -77,9 +115,9 @@
     timeout: 3000
 
 - id: setup-edge
-  role: ['compute']
-  required_for: [post_deployment_end, setup-gateway]
-  requires: [post_deployment_start, solution-api]
+  groups: ['compute']
+  required_for: [post_deployment_end]
+  requires: [post_deployment_start, solution-api, pg_common]
   type: puppet
   parameters:
     puppet_manifest: puppet/manifests/edge.pp
@@ -87,20 +125,11 @@
     timeout: 3000
 
 - id: setup-gateway
-  role: ['PLUMgrid-Gateway']
-  required_for: [post_deployment_end, cleanup_os]
-  requires: [post_deployment_start, setup-edge]
+  groups: ['PLUMgrid-Gateway']
+  required_for: [post_deployment_end]
+  requires: [post_deployment_start, solution-api, pg_common]
   type: puppet
   parameters:
     puppet_manifest: puppet/manifests/gateway.pp
     puppet_modules: puppet/modules:/etc/puppet/modules
-    timeout: 3000
-
-- id: cleanup_os
-  role: ['primary-controller']
-  required_for: [post_deployment_end]
-  requires: [post_deployment_start, setup-gateway]
-  type: shell
-  parameters:
-    cmd: bash cleanup_os.sh
     timeout: 3000

@@ -154,6 +154,7 @@ class { '::neutron::plugins::plumgrid':
   controller_priv_host         => $service_endpoint,
   connection                   => $neutron_db_uri,
   nova_metadata_ip             => '169.254.169.254',
+  nova_metadata_subnet         => '169.254.169.252/30',
   nova_metadata_port           => '8775',
   metadata_proxy_shared_secret => $metadata_secret,
   package_ensure               => 'latest',
