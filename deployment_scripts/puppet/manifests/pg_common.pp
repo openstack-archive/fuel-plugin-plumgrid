@@ -67,22 +67,6 @@ file { '/tmp/plumgrid_config':
   content => "fuel_hostname=$fuel_hostname\nplumgrid_username=$plumgrid_username\nplumgrid_password=$plumgrid_password\nhaproxy_vip=$haproxy_vip\ndirector_ip=$controller_ipaddresses\nedge_ip=$compute_ipaddresses\ngateway_ip=$gateway_ipaddresses\nmetadata_secret=$metadata\nvip=$plumgrid_vip\nopsvm_ip=$opsvm_ip\npg_repo=$plumgrid_pkg_repo\nzone_name=$plumgrid_zone\nfabric_network=$fabric_network\nfuel_version=$fuel_version\nlicense=$plumgrid_lic",
 }
 
-exec { 'ovs_rmmod':
-  command => 'rmmod openvswitch',
-  path    => '/sbin',
-  onlyif  => 'lsmod | /bin/grep openvswitch'
-}
-
-exec { 'openvswitch-switch_forceremove':
-  command => 'dpkg -r --force-all openvswitch-switch',
-  path    => '/usr/bin',
-  onlyif  => 'dpkg -l | /bin/grep openvswitch-switch'
-}
-
-package { 'openvswitch-*':
-  ensure => absent
-}
-
 file { ['/var/lib/plumgrid', '/var/lib/plumgrid/zones', "/var/lib/plumgrid/zones/$plumgrid_zone"]:
   ensure  =>  directory,
   mode    =>  0755,
