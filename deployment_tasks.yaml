@@ -8,6 +8,44 @@
     strategy:
       type: parallel
 
+# Skip default neutron plugins
+- id: primary-openstack-network-plugins-l2
+  type: skipped
+- id: openstack-network-plugins-l2
+  type: skipped
+- id: openstack-network-routers-ha
+  type: skipped
+# Skip Neutron agents
+- id: primary-openstack-network-agents-l3
+  type: skipped
+- id: openstack-network-agents-l3
+  type: skipped
+- id: primary-openstack-network-agents-dhcp
+  type: skipped
+- id: openstack-network-agents-dhcp
+  type: skipped
+- id: primary-openstack-network-agents-metadata
+  type: skipped
+- id: openstack-network-agents-metadata
+  type: skipped
+- id: openstack-network-agents-sriov
+  type: skipped
+# Skip default fuel networks and routers
+- id: openstack-network-networks
+  type: skipped
+- id: openstack-network-routers
+  type: skipped
+
+- id: disable-openvswitch
+  groups: ['controller', 'compute', 'PLUMgrid-Gateway', 'primary-controller']
+  required_for: [netconfig]
+  requires: [deploy_start, globals]
+  type: puppet
+  parameters:
+    puppet_manifest: puppet/manifests/disable_openvswitch.pp
+    puppet_modules: puppet/modules:/etc/puppet/modules
+    timeout: 120
+
 - id: pgtools-support
   role: ['controller', 'primary-controller']
   required_for: [post_deployment_end]
@@ -88,19 +126,10 @@
 
 - id: setup-gateway
   role: ['PLUMgrid-Gateway']
-  required_for: [post_deployment_end, cleanup_os]
+  required_for: [post_deployment_end]
   requires: [post_deployment_start, setup-edge]
   type: puppet
   parameters:
     puppet_manifest: puppet/manifests/gateway.pp
     puppet_modules: puppet/modules:/etc/puppet/modules
-    timeout: 3000
-
-- id: cleanup_os
-  role: ['primary-controller']
-  required_for: [post_deployment_end]
-  requires: [post_deployment_start, setup-gateway]
-  type: shell
-  parameters:
-    cmd: bash cleanup_os.sh
     timeout: 3000
