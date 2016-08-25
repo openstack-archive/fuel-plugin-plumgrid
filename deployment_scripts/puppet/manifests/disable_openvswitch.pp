@@ -15,22 +15,14 @@
 
 notice('MODULAR: plumgrid/disable_ovs.pp')
 
-file_line { 'Disable ovs in globals.yaml':
-  path     => '/etc/hiera/globals.yaml',
-  line     => '  use_ovs: false',
-  match    => 'use_ovs',
+file { '/etc/hiera/plugins/plumgrid.yaml':
+  ensure  => file,
+  content => 'use_ovs: false',
 }
 
 file_line { 'Replace provider ovs with lnx':
   path     => '/etc/astute.yaml',
   line     => '    provider: lnx',
   match    => '    provider: ovs',
-  multiple => true,
-}
-
-file_line { 'Replace provider ovs with lnx in globals.yaml':
-  path     => '/etc/hiera/globals.yaml',
-  line     => '        provider: lnx',
-  match    => '        provider: ovs',
   multiple => true,
 }

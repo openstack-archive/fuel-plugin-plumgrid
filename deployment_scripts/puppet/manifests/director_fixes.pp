@@ -32,3 +32,27 @@ file_line { 'ensure no port conflict between apache-keystone':
   ensure  => 'absent',
   require => File['/etc/apache2/ports.conf']
 }
+
+ini_setting { 'Add Project domain name variable to plumlib.ini':
+  ensure  => 'present',
+  path    => '/etc/neutron/plugins/plumgrid/plumlib.ini',
+  section => 'keystone_authtoken',
+  setting => 'user_domain_name',
+  value   => 'Default',
+}
+
+ini_setting { 'Add enable_reverse_flow paramater in plumlib.ini':
+  ensure  => 'present',
+  path    => '/etc/neutron/plugins/plumgrid/plumlib.ini',
+  section => 'PLUMgridLibrary',
+  setting => 'enable_reverse_flow_tap',
+  value   => 'True',
+}
+
+ini_setting { 'Add nova_metaconfig paramater in plumlib.ini':
+  ensure  => 'present',
+  path    => '/etc/neutron/plugins/plumgrid/plumlib.ini',
+  section => 'PLUMgridLibrary',
+  setting => 'nova_metaconfig',
+  value   => 'True',
+}
