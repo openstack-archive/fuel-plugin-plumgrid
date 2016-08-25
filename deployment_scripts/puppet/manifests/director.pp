@@ -102,6 +102,10 @@ file { '/etc/neutron/neutron.conf':
   notify => Service['neutron-server'],
 }
 
+file { '/etc/neutron/plugins/plumgrid/plumlib.ini':
+  ensure => present,
+}
+
 file_line { 'Enable PLUMgrid core plugin':
   path    => '/etc/neutron/neutron.conf',
   line    => 'core_plugin=networking_plumgrid.neutron.plugins.plugin.NeutronPluginPLUMgridV2',
@@ -154,11 +158,34 @@ class { '::neutron::plugins::plumgrid':
   controller_priv_host         => $service_endpoint,
   connection                   => $neutron_db_uri,
   nova_metadata_ip             => '169.254.169.254',
+  nova_metadata_subnet         => '169.254.169.252/30',
   nova_metadata_port           => '8775',
   metadata_proxy_shared_secret => $metadata_secret,
   package_ensure               => 'latest',
-}
-
+  identity_version             => 'v3',
+  user_domain_name             => 'Default'
+}->
+file_line { 'Add Project domain name variable to plumlib.ini':
+  path    => '/etc/neutron/plugins/plumgrid/plumlib.ini',
+  line    => 'project_domain_name = Default',
+  after   => 'user_domain_name=Default',
+  ensure  => 'present',
+  require => File['/etc/neutron/plugins/plumgrid/plumlib.ini']
+}->
+file_line { 'Add enable_reverse_flow paramater in plumlib.ini':
+  path    => '/etc/neutron/plugins/plumgrid/plumlib.ini',
+  line    => 'enable_reverse_flow_tap = True',
+  after   => "PLUMgridLibrary",
+  ensure  => 'present',
+  require => File['/etc/neutron/plugins/plumgrid/plumlib.ini']
+}->
+file_line { 'Add nova_metaconfig paramater in plumlib.ini':
+  path    => '/etc/neutron/plugins/plumgrid/plumlib.ini',
+  line    => 'nova_metaconfig = True',
+  after   => "PLUMgridLibrary",
+  ensure  => 'present',
+  require => File['/etc/neutron/plugins/plumgrid/plumlib.ini'],
+}->
 exec { "neutron-db-manage upgrade heads":
   command => "/usr/bin/neutron-db-manage upgrade heads",
   notify  => Service["$::neutron::params::server_service"],
