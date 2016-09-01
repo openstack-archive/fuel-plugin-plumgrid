@@ -1,0 +1,8 @@
+Code-Review+2: Javeria Khan <javeriak@plumgrid.com>
+Workflow+1: Javeria Khan <javeriak@plumgrid.com>
+Verified+2: Jenkins
+Submitted-by: Jenkins
+Submitted-at: Thu, 01 Sep 2016 12:33:33 +0000
+Reviewed-on: https://review.openstack.org/360364
+Project: openstack/fuel-plugin-plumgrid
+Branch: refs/heads/master
