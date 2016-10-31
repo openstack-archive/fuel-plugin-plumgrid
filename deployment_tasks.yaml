@@ -98,15 +98,6 @@
     puppet_modules: puppet/modules:/etc/puppet/modules
     timeout: 3000
 
-- id: post_pg_license
-  role: ['primary-controller']
-  required_for: [post_deployment_end, solution-api]
-  requires: [post_deployment_start, director-fixes]
-  type: shell
-  parameters:
-    cmd: bash post_pg_license.sh
-    timeout: 3000
-
 - id: solution-api
   role: ['primary-controller']
   required_for: [post_deployment_end, setup-edge]
@@ -114,6 +105,15 @@
   type: shell
   parameters:
     cmd: bash solution_api.sh
+    timeout: 3000
+
+- id: post_pg_license
+  role: ['primary-controller']
+  required_for: [post_deployment_end, solution-api]
+  requires: [post_deployment_start, director-fixes]
+  type: shell
+  parameters:
+    cmd: bash post_pg_license.sh
     timeout: 3000
 
 - id: setup-edge
