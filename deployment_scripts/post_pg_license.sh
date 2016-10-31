@@ -25,6 +25,9 @@ set -x
 
 if [[ ! -f "/root/post_director" ]];then
 
+  #Restart plumgrid service before posting license
+  service plumgrid restart
+
   #Wait for the platform to come up
   sleep 5
   retry_cnt=0
