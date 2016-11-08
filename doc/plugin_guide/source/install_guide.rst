@@ -4,7 +4,7 @@ Installation Guide
 Prerequisites
 -------------
 
-This document assumes that you have `installed Fuel <https://docs.mirantis.com/openstack/fuel/fuel-7.0/user-guide.html>`_
+This document assumes that you have `installed Fuel <http://docs.openstack.org/developer/fuel-docs/userdocs/fuel-install-guide.html>`_
 and setup the target hosts with appropriate networking for the pxe, management, public and plumgrid-fabric networks. The nodes
 must be discovered and functional prior to performing the following steps.
 
@@ -13,7 +13,7 @@ Obtain a PLUMgrid ONS license and access to packages or LCM image by emailing PL
 Installing Fuel PLUMgrid Plugin
 -------------------------------
 
-#. Download the PLUMgrid plugin from the `Fuel Plugins Catalog <https://software.mirantis.com/download-mirantis-openstack-fuel-plug-ins/>`_.
+#. Download the PLUMgrid plugin from the `Fuel Plugins Catalog <https://www.mirantis.com/software/fuel-plugins/>`_.
 #. Copy this file to the Fuel Master node with secure copy (scp):
    ::
 
@@ -35,19 +35,19 @@ Installing Fuel PLUMgrid Plugin
 
       fuel plugins --list
 
-#. The plugin is now ready for use and can be enabled in the Settings → PLUMgrid Plugin section of an OpenStack environment on the Fuel UI as explained next.
+#. The plugin is now ready for use and can be enabled in the Settings → Other PLUMgrid Plugin section of an OpenStack environment on the Fuel UI as explained next.
    This part is visible after a new environment is created.
 
 Configuring a New Environment
 -----------------------------
 
-#. In Fuel UI `create a new environment <https://docs.mirantis.com/openstack/fuel/fuel-7.0/user-guide.html#create-a-new-openstack-environment>`_.
+#. In Fuel UI `create a new environment <http://docs.openstack.org/developer/fuel-docs/userdocs/fuel-user-guide/create-environment/start-create-env.html>`_.
 
     .. image:: images/create_env.png
        :width: 80%
 
 
-#. Select the appropriate KVM or QEMU hypervisor type for your environment.
+#. Select the QEMU-KVM hypervisor type for your environment.
 
     .. image:: images/compute.png
        :width: 80%
@@ -61,7 +61,7 @@ Configuring a New Environment
 Configuring PLUMgrid Plugin
 ---------------------------
 
-#. After creating the environment, navigate to Settings → Fuel PLUMgrid plugin. Check the Fuel PLUMgrid Pluginbox and fill in the appropriate values for the environment.
+#. After creating the environment, navigate to Settings → Other. Check the PLUMgrid Plugin box and fill in the appropriate values for the environment.
 
    .. image:: images/plumgrid_ui_setup.png
        :width: 80%
@@ -72,6 +72,8 @@ Configuring PLUMgrid Plugin
   * **Enter the password for PLUMgrid:** default is *plumgrid*
 
   * **PLUMgrid VIP on the management network to access the PLUMgrid console:**  The IP address for PLUMgrid console. Make sure to select an unassigned IP on the management network.
+
+  * **Enter the OPSVM IP:** Enter the IP for the OPSVM.
 
   * **Enter the PLUMgrid Fabric Network:** Enter the network that will be used by PLUMgrid Fabric (without subnet mask).
 
@@ -86,16 +88,17 @@ Configuring PLUMgrid Plugin
 Deployment Settings
 -------------------
 
-#. Navigate to Repositories tab and click Add Extra Repo and provide the following PLUMgrid repositories:
+#. Navigate to Settings → General tab, Repositories Section and click Add Extra Repo and provide the following PLUMgrid repositories:
    ::
 
       plumgrid           deb http://<LCM-IP>:81/plumgrid plumgrid <component>         1200
       plumgrid-images    deb http://<LCM-IP>:81/plumgrid-images plumgrid <component>  1250
+      openstack-mitaka   deb http://<LCM-IP>:81/openstack/deb/mitaka openstack-mitaka <component> 1300
 
    .. image:: images/plumgrid_repos.png
        :width: 80%
 
-#. Navigate to the Nodes tab and click on Add nodes:
+#. Navigate to the Nodes tab and click on Add Nodes:
 
    .. image:: images/add_nodes.png
        :width: 80%
@@ -117,7 +120,7 @@ Deployment Settings
        :width: 80%
 
 
-#. Press **Deploy changes** in the Dashboard tab to `deploy the environment <https://docs.mirantis.com/openstack/fuel/fuel-7.0/user-guide.html#deploy-changes>`_.
+#. Press **Deploy changes** in the Dashboard tab to `deploy the environment <http://docs.openstack.org/developer/fuel-docs/userdocs/fuel-user-guide/deploy-environment/deploy-changes.html>`_.
 
 #. After a successful deployment, the PLUMgrid UI will be accessible on the VIP entered in the PLUMgrid Settings.
    ::
