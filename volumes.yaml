@@ -1,5 +1,0 @@
-volumes_roles_mapping:
-  PG-GW:
-    - {allocate_size: "min", id: "os"}
-    - {allocate_size: "all", id: "vm"}
-volumes: []
